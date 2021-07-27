@@ -1,0 +1,5 @@
+__version__ = '0.0.1'
+__author__ = 'Xiaoqian Zhang'
+__homepage__ = ''
+__description__ = 'Congest Control Experiemnt Scripts (Network Lab UMB)'
+__url__ = 'https://github.com/TiffanyXQZ/cce-scripts'
