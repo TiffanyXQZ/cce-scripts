@@ -7,12 +7,21 @@ app = typer.Typer()
 def run(path: str = typer.Argument(..., help="The path to main.exe"),
         pfc: int = typer.Option(100, help="p f c not kfc"),
         kmax: int = typer.Option(100, help="kmax not kmin"),
-        qcn: bool = typer.Option(False, help="qcn or non-qcn")):
+        qcn: bool = typer.Option(False, help="qcn or non-qcn"),
+        ):
+    '''
+
+    :param path:
+    :param pfc:
+    :param kmax:
+    :param qcn:
+    :return:
+    '''
     print(path, pfc, kmax, qcn)
 
 
 @app.command()
-def hello(name: str):
+def hello(name: str = 'world'):
     typer.echo(f"Hello {name}")
 
 
