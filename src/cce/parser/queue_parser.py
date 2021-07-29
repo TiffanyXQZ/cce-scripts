@@ -1,7 +1,7 @@
 import pathlib
 
 
-def count_spine_pause_r(queue: str, range = (280, 288), key: str = 'PAUSE_R'):
+def count_spine_pause_r(queue: str, range:tuple[int, int] = (280, 288), key: str = 'PAUSE_R') ->tuple[int, int]:
     '''
 
     :param queue: file path for queue
@@ -32,6 +32,9 @@ def count_spine_pause_r(queue: str, range = (280, 288), key: str = 'PAUSE_R'):
     return c1, c2
 
 if __name__ == '__main__':
-    path = r'C:\Users\xzhan\Desktop\CongestionControl\ssd_work_space\test\QCN\kmax50PFC50\Tencent1125-1W_24us_10_to_1_net-ssd\1\queue.txt'
-    path = pathlib.PureWindowsPath(path)
-    print(count_spine_pause_r(path))
+    import sys, getpass
+    print(sys.platform, getpass.getuser())
+    if getpass.getuser() == 'xzhan':
+        path = r'C:\Users\xzhan\Desktop\CongestionControl\ssd_work_space\test\QCN\kmax50PFC50\Tencent1125-1W_24us_10_to_1_net-ssd\1\queue.txt'
+        path = pathlib.PureWindowsPath(path)
+        print(count_spine_pause_r(path))
