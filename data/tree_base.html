@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Awesome-pyecharts</title>
+            <script type="text/javascript" src="https://assets.pyecharts.org/assets/echarts.min.js"></script>
+
+</head>
+<body>
+    <div id="43702aa3e23047eaa11211df68801e7c" class="chart-container" style="width:900px; height:500px;"></div>
+    <script>
+        var chart_43702aa3e23047eaa11211df68801e7c = echarts.init(
+            document.getElementById('43702aa3e23047eaa11211df68801e7c'), 'white', {renderer: 'canvas'});
+        var option_43702aa3e23047eaa11211df68801e7c = {
+    "animation": true,
+    "animationThreshold": 2000,
+    "animationDuration": 1000,
+    "animationEasing": "cubicOut",
+    "animationDelay": 0,
+    "animationDurationUpdate": 300,
+    "animationEasingUpdate": "cubicOut",
+    "animationDelayUpdate": 0,
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "tree",
+            "data": [
+                {
+                    "name": "FlowMonitor",
+                    "count": 1,
+                    "children": [
+                        {
+                            "name": "FlowStats",
+                            "count": 1,
+                            "attribute": {},
+                            "children": [
+                                {
+                                    "name": "Flow",
+                                    "count": 10000,
+                                    "attribute": {
+                                        "flowId": "1",
+                                        "timeFirstTxPacket": "+0.0ns",
+                                        "timeFirstRxPacket": "+8472.0ns",
+                                        "timeLastTxPacket": "+135.0ns",
+                                        "timeLastRxPacket": "+11768.0ns",
+                                        "delaySum": "+20105.0ns",
+                                        "jitterSum": "+3161.0ns",
+                                        "lastDelay": "+11633.0ns",
+                                        "txBytes": "2056",
+                                        "rxBytes": "2056",
+                                        "txPackets": "2",
+                                        "rxPackets": "2",
+                                        "lostPackets": "0",
+                                        "timesForwarded": "10"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "delayHistogram",
+                                            "count": 1,
+                                            "attribute": {
+                                                "nBins": "1"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "bin",
+                                                    "count": 1,
+                                                    "attribute": {
+                                                        "index": "0",
+                                                        "start": "0",
+                                                        "width": "0.001",
+                                                        "count": "2"
+                                                    },
+                                                    "children": []
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "jitterHistogram",
+                                            "count": 1,
+                                            "attribute": {
+                                                "nBins": "1"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "bin",
+                                                    "count": 1,
+                                                    "attribute": {
+                                                        "index": "0",
+                                                        "start": "0",
+                                                        "width": "0.001",
+                                                        "count": "1"
+                                                    },
+                                                    "children": []
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "packetSizeHistogram",
+                                            "count": 1,
+                                            "attribute": {
+                                                "nBins": "52"
+                                            },
+                                            "children": [
+                                                {
+                                                    "name": "bin",
+                                                    "count": 1,
+                                                    "attribute": {
+                                                        "index": "51",
+                                                        "start": "1020",
+                                                        "width": "20",
+                                                        "count": "2"
+                                                    },
+                                                    "children": []
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "flowInterruptionsHistogram",
+                                            "count": 1,
+                                            "attribute": {
+                                                "nBins": "0"
+                                            },
+                                            "children": []
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Ipv4FlowClassifier",
+                            "count": 1,
+                            "attribute": {},
+                            "children": [
+                                {
+                                    "name": "Flow",
+                                    "count": 10000,
+                                    "attribute": {
+                                        "flowId": "1",
+                                        "sourceAddress": "1.1",
+                                        "destinationAddress": "1.161",
+                                        "protocol": "17",
+                                        "sourcePort": "49153",
+                                        "destinationPort": "9199"
+                                    },
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "FlowProbes",
+                            "count": 1,
+                            "attribute": {},
+                            "children": [
+                                {
+                                    "name": "FlowProbe",
+                                    "count": 288,
+                                    "attribute": {
+                                        "index": "0"
+                                    },
+                                    "children": [
+                                        {
+                                            "name": "FlowStats",
+                                            "count": 1000,
+                                            "attribute": {
+                                                "flowId": "1",
+                                                "packets": "2",
+                                                "bytes": "2056",
+                                                "delayFromFirstProbeSum": "+0.0ns"
+                                            },
+                                            "children": []
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "symbol": "emptyCircle",
+            "symbolSize": 7,
+            "edgeShape": "curve",
+            "edgeForkPosition": "50%",
+            "roam": false,
+            "expandAndCollapse": true,
+            "layout": "orthogonal",
+            "orient": "LR",
+            "label": {
+                "show": true,
+                "position": "top",
+                "margin": 8
+            },
+            "leaves": {
+                "label": {
+                    "show": true,
+                    "position": "top",
+                    "margin": 8
+                }
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [],
+            "selected": {},
+            "show": true,
+            "padding": 5,
+            "itemGap": 10,
+            "itemWidth": 25,
+            "itemHeight": 14
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "showContent": true,
+        "alwaysShowContent": false,
+        "showDelay": 0,
+        "hideDelay": 100,
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0,
+        "padding": 5
+    },
+    "title": [
+        {
+            "text": "Tree-\u57fa\u672c\u793a\u4f8b",
+            "padding": 5,
+            "itemGap": 10
+        }
+    ]
+};
+        chart_43702aa3e23047eaa11211df68801e7c.setOption(option_43702aa3e23047eaa11211df68801e7c);
+    </script>
+</body>
+</html>
