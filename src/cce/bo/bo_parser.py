@@ -166,7 +166,151 @@ class ProbeFlowStats(object):
     #  class variable list
     __slots__ = ['probeId', 'packets', 'bytes', 'delayFromFirstProbe']
 
+'''
+/home/zwa/xq/cce-scripts/venv/bin/python /home/zwa/xq/cce-scripts/src/cce/parser/flow_parser.py
+{
+    'name': 'FlowMonitor',
+    'count': 1,
+    'children': [
+        {
+            'name': 'FlowStats',
+            'count': 1,
+            'attribute': {},
+            'children': [
+                {
+                    'name': 'Flow',
+                    'count': 10000,
+                    'attribute': {
+                        'flowId': '1',
+                        'timeFirstTxPacket': '+0.0ns',
+                        'timeFirstRxPacket': '+8472.0ns',
+                        'timeLastTxPacket': '+135.0ns',
+                        'timeLastRxPacket': '+11768.0ns',
+                        'delaySum': '+20105.0ns',
+                        'jitterSum': '+3161.0ns',
+                        'lastDelay': '+11633.0ns',
+                        'txBytes': '2056',
+                        'rxBytes': '2056',
+                        'txPackets': '2',
+                        'rxPackets': '2',
+                        'lostPackets': '0',
+                        'timesForwarded': '10'
+                    },
+                    'children': [
+                        {
+                            'name': 'delayHistogram',
+                            'count': 1,
+                            'attribute': {'nBins': '1'},
+                            'children': [
+                                {
+                                    'name': 'bin',
+                                    'count': 1,
+                                    'attribute': {
+                                        'index': '0',
+                                        'start': '0',
+                                        'width': '0.001',
+                                        'count': '2'
+                                    },
+                                    'children': []
+                                }
+                            ]
+                        },
+                        {
+                            'name': 'jitterHistogram',
+                            'count': 1,
+                            'attribute': {'nBins': '1'},
+                            'children': [
+                                {
+                                    'name': 'bin',
+                                    'count': 1,
+                                    'attribute': {
+                                        'index': '0',
+                                        'start': '0',
+                                        'width': '0.001',
+                                        'count': '1'
+                                    },
+                                    'children': []
+                                }
+                            ]
+                        },
+                        {
+                            'name': 'packetSizeHistogram',
+                            'count': 1,
+                            'attribute': {'nBins': '52'},
+                            'children': [
+                                {
+                                    'name': 'bin',
+                                    'count': 1,
+                                    'attribute': {
+                                        'index': '51',
+                                        'start': '1020',
+                                        'width': '20',
+                                        'count': '2'
+                                    },
+                                    'children': []
+                                }
+                            ]
+                        },
+                        {
+                            'name': 'flowInterruptionsHistogram',
+                            'count': 1,
+                            'attribute': {'nBins': '0'},
+                            'children': []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            'name': 'Ipv4FlowClassifier',
+            'count': 1,
+            'attribute': {},
+            'children': [
+                {
+                    'name': 'Flow',
+                    'count': 10000,
+                    'attribute': {
+                        'flowId': '1',
+                        'sourceAddress': '1.1',
+                        'destinationAddress': '1.161',
+                        'protocol': '17',
+                        'sourcePort': '49153',
+                        'destinationPort': '9199'
+                    },
+                    'children': []
+                }
+            ]
+        },
+        {
+            'name': 'FlowProbes',
+            'count': 1,
+            'attribute': {},
+            'children': [
+                {
+                    'name': 'FlowProbe',
+                    'count': 288,
+                    'attribute': {'index': '0'},
+                    'children': [
+                        {
+                            'name': 'FlowStats',
+                            'count': 1000,
+                            'attribute': {
+                                'flowId': '1',
+                                'packets': '2',
+                                'bytes': '2056',
+                                'delayFromFirstProbeSum': '+0.0ns'
+                            },
+                            'children': []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
 
+Process finished with exit code 0
+'''
 ## Simulation
 class Simulation(object):
     ## class variables
@@ -265,7 +409,7 @@ def checkSize(filename):
                 # sys.stdout.write(".")
                 sys.stdout.flush()
     # print (" done.")
-
+    print(len(sim_list))
     size = []
     rsize = []
     wsize = []
@@ -350,4 +494,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    # main(sys.argv)
+    checkSize('../../../data/flow_monitor.xml')
