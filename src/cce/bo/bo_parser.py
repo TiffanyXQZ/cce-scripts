@@ -329,6 +329,7 @@ def main(argv):
 
     # Compare2(th,th1)
     printThroughputs(th)
+
     # Compare2(rth,rth1)
     # Compare2(wth,wth1)
     # print ("\tTX bitrate: %.2f kbit/s" % (flow.txBitrate*1e-3,))
