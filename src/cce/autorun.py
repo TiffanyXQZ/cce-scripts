@@ -31,6 +31,34 @@ def run(path: str = typer.Argument(..., help="The path to main.exe"),
 @app.command()
 def hello(name: str = 'world'):
     typer.echo(f"Hello {name}")
+@app.command()
+def kmax_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.bat")):
+    script = 'flowmon-parse-results.py'
+    work_dir = pathlib.PureWindowsPath(path)
+    os.chdir(path)
+    print(pathlib.Path().resolve())
+    pfc = 100
+    kmax = 20
+    qcn = 1
+    for kmax in range(20, 120, 20):
+        for i in range(1,4):
+            subprocess.run(['./run.bat', pfc, kmax,qcn])
+            res = f'pfc_{pfc}_kmax_{kmax}_qcn_{qcn}'
+            os.rename(res, f'res_test{i}')
+
+@app.command()
+def pfc_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.bat")):
+    script = 'flowmon-parse-results.py'
+    work_dir = pathlib.PureWindowsPath(path)
+    os.chdir(path)
+    print(pathlib.Path().resolve())
+    kmax = 100
+    qcn = 1
+    for pfc in range(50, 300, 50):
+        for i in range(1,4):
+            subprocess.run(['./run.bat', kmax, pfc,qcn])
+            res = f'pfc_{kmax}_kmax_{pfc}_qcn_{qcn}'
+            os.rename(res, f'res_test{i}')
 
 
 @app.command()
