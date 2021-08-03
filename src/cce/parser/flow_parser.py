@@ -231,19 +231,11 @@ def tree_data(l):
 
 # print(tree_data([1,2,3,4,5]))
 
-def tree_charts(data):
-    c = (
-        Tree()
-            .add("", data)
-            .set_global_opts(title_opts=opts.TitleOpts(title="Tree-基本示例"))
-            .render("../../../data/tree_base.html")
-    )
-
 
 # tree_charts([tree_data([1, 2, 3, 4, 5, 6, 7])])
 
-tree = ET.parse('../../../data/flow_monitor.xml')
-root = tree.getroot()
+# tree = ET.parse('../../../data/flow_monitor.xml')
+# root = tree.getroot()
 
 
 def xml_tag_tree(root_xml: ElementTree) -> dict:
@@ -274,6 +266,6 @@ def xml_tag_tree(root_xml: ElementTree) -> dict:
     return root_tag
 
 
-tag_tree = xml_tag_tree(root)
-print(tag_tree)
-tree_charts([tag_tree])
+# tag_tree = xml_tag_tree(root)
+# print(tag_tree)
+# tree_charts([tag_tree])
