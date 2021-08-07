@@ -24,8 +24,9 @@ setup(
     packages=find_packages(where="src"),
     python_requires=">=3.9",
     extras_require=dict(tests=['pytest']),
-    entry_points = {
-        'console_scripts':[
+    include_package_data=True,
+    entry_points={
+        'console_scripts': [
             'cce=cce.autorun:app'
         ]
     }

@@ -1,13 +1,7 @@
-import os
-import pathlib
-import pickle
-import subprocess
-
-import typer, sys, getpass
-
+import typer, sys, getpass, subprocess, pathlib, os,shutil
 from cce.bo.bo_parser import ProcessXMLFile
 from cce.parser.queue_parser import count_spine_pause_r
-
+from cce.config.setting import *
 app = typer.Typer()
 
 
@@ -25,40 +19,115 @@ def run(path: str = typer.Argument(..., help="The path to main.exe"),
     :param qcn:
     :return:
     '''
-    print(path, pfc, kmax, qcn)
+
+    work_dir = pathlib.Path(path)
+    os.chdir(work_dir)
+    result_folder = work_dir / f'pfc_{pfc}_kmax{kmax}_qcn_{int(qcn)}'
+    result_folder.mkdir(exist_ok=True)
+    s = set_config({'PFC': str(pfc),
+                    'KMAX': str(kmax),
+                    'ENABLE_QCN': str(int(qcn)),
+                    'TRACE_OUTPUT_FILE':str(result_folder / 'mix.tr')
+                    })
+    cur_config_txt = result_folder / 'config.txt'
+    with open(cur_config_txt, 'w') as f: f.write(s)
+    cur_log_txt = result_folder / 'log.txt'
+
+    with open(cur_log_txt, 'w') as f:
+        subprocess.run(
+            ['./main.exe', cur_config_txt],
+            stdout=f,
+            stderr=f,
+            text=True,
+        )
+
+
+    #          flow.txt     mix.tr
+    files = ['FLOW_FILE']
+    for f in files: shutil.copy(CONFIG_TXT[f], result_folder)
+    shutil.copy(f'flow_monitor.xml', result_folder )
+
 
 
 @app.command()
 def hello(name: str = 'world'):
     typer.echo(f"Hello {name}")
+
+
 @app.command()
 def kmax_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.bat")):
-    script = 'flowmon-parse-results.py'
-    work_dir = pathlib.PureWindowsPath(path)
-    os.chdir(path)
-    print(pathlib.Path().resolve())
+    work_dir = pathlib.Path(path)
+    os.chdir(work_dir)
     pfc = 100
-    kmax = 20
     qcn = 1
-    for kmax in range(20, 120, 20):
-        for i in range(1,4):
-            subprocess.run(['./run.bat', pfc, kmax,qcn])
-            res = f'pfc_{pfc}_kmax_{kmax}_qcn_{qcn}'
-            os.rename(res, f'res_test{i}')
+
+
+    for kmax in range(20, 100, 20):
+        for i in range(1, 4):
+
+            result_folder = work_dir / f'pfc_{pfc}_kmax{kmax}_qcn_{int(qcn)}_test{i}'
+            result_folder.mkdir(exist_ok=True)
+            s = set_config({'PFC': str(pfc),
+                            'KMAX': str(kmax),
+                            'ENABLE_QCN': str(int(qcn)),
+                            'TRACE_OUTPUT_FILE': str(result_folder / 'mix.tr')
+                            })
+            cur_config_txt = result_folder / 'config.txt'
+            with open(cur_config_txt, 'w') as f:
+                f.write(s)
+            cur_log_txt = result_folder / 'log.txt'
+
+            with open(cur_log_txt, 'w') as f:
+                subprocess.run(
+                    ['./main.exe', cur_config_txt],
+                    stdout=f,
+                    stderr=f,
+                    text=True,
+                )
+
+            #          flow.txt     mix.tr
+            files = ['FLOW_FILE']
+            for f in files: shutil.copy(CONFIG_TXT[f], result_folder)
+            shutil.copy(f'flow_monitor.xml', result_folder)
+
+
+
+
+
 
 @app.command()
 def pfc_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.bat")):
-    script = 'flowmon-parse-results.py'
-    work_dir = pathlib.PureWindowsPath(path)
-    os.chdir(path)
+    work_dir = pathlib.Path(path)
+    os.chdir(work_dir)
     print(pathlib.Path().resolve())
     kmax = 100
     qcn = 1
     for pfc in range(50, 300, 50):
-        for i in range(1,4):
-            subprocess.run(['./run.bat', kmax, pfc,qcn])
-            res = f'pfc_{kmax}_kmax_{pfc}_qcn_{qcn}'
-            os.rename(res, f'res_test{i}')
+        for i in range(1, 4):
+            result_folder = work_dir / f'pfc_{pfc}_kmax{kmax}_qcn_{int(qcn)}_test{i}'
+            result_folder.mkdir(exist_ok=True)
+            s = set_config({'PFC': str(pfc),
+                            'KMAX': str(kmax),
+                            'ENABLE_QCN': str(int(qcn)),
+                            'TRACE_OUTPUT_FILE': str(result_folder / 'mix.tr')
+                            })
+            cur_config_txt = result_folder / 'config.txt'
+            with open(cur_config_txt, 'w') as f:
+                f.write(s)
+            cur_log_txt = result_folder / 'log.txt'
+
+            with open(cur_log_txt, 'w') as f:
+                subprocess.run(
+                    ['./main.exe', cur_config_txt],
+                    stdout=f,
+                    stderr=f,
+                    text=True,
+                )
+
+            #          flow.txt     mix.tr
+            files = ['FLOW_FILE']
+            for f in files: shutil.copy(CONFIG_TXT[f], result_folder)
+            shutil.copy(f'flow_monitor.xml', result_folder)
 
 
 @app.command()
@@ -98,7 +167,7 @@ def flow_moniter_parser(path: str = typer.Argument(..., help="The path to test r
                 # print(test)
                 h = ProcessXMLFile(f'{test}/flow_monitor.xml')[i]
                 with open(f'{test}/pause.txt', 'w') as f:
-                    pause1, pause2 = count_spine_pause_r(f'{test}/log')
+                    pause1, pause2 = count_spine_pause_r(f'{test}/log.txt')
 
                 row += [test, len(h), np.mean(h), np.median(h), np.percentile(h, 10), pause1, pause2]
                 # print(row)
