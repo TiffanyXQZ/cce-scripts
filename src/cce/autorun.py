@@ -62,7 +62,7 @@ def kmax_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.ba
     qcn = 1
 
 
-    for kmax in range(20, 100, 20):
+    for kmax in range(20, 220, 20):
         for i in range(1, 4):
 
             result_folder = work_dir / f'pfc_{pfc}_kmax{kmax}_qcn_{int(qcn)}_test{i}'
@@ -70,7 +70,8 @@ def kmax_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.ba
             s = set_config({'PFC': str(pfc),
                             'KMAX': str(kmax),
                             'ENABLE_QCN': str(int(qcn)),
-                            'TRACE_OUTPUT_FILE': str(result_folder / 'mix.tr')
+                            'TRACE_OUTPUT_FILE': str(result_folder / 'mix.tr'),
+
                             })
             cur_config_txt = result_folder / 'config.txt'
             with open(cur_config_txt, 'w') as f:
@@ -196,6 +197,80 @@ def flow_moniter_parser(path: str = typer.Argument(..., help="The path to test r
         #     res = count_spine_pause_r(f'{folder}/log')
         #     res = [str(i) for i in res]
         #     f.write(','.join(res))
+    pass
+@app.command()
+def flow_id_editor(path: str = typer.Argument(..., help="The path to the id file")):
+
+
+
+    pattern = {
+            '1':'14',
+            '2':'16',
+            '3':'30',
+            '4':'32',
+            '5':'46',
+            '6':'48',
+            '7':'62',
+            '8':'64',
+            '9':'112',
+            }
+
+
+
+    data = []
+    with open(path, 'r') as f:
+
+        for line1 in f:
+
+            line = [i for i in line1.strip().split(' ') if i]
+            if len(line) > 1: 
+                if line[0] in pattern: line[0] = pattern[line[0]]
+                if line[1] in pattern: line[1] = pattern[line[1]]
+            data.append(line)
+
+    # print(data)
+
+    with open(path, 'w') as f:
+        for line in data:
+            f.write(' '.join([str(i) for i in line]))
+            f.write('\n')
+
+@app.command()
+def additional_flow_gen(src: str = typer.Argument(..., help="The path to the id file"),
+                        dst: str = typer.Argument(..., help="The path to the dst file"),
+    ):
+
+
+
+    data = []
+    data1 = []
+    with open(src, 'r') as f:
+
+        for line1 in f:
+
+            line = [i for i in line1.strip().split(' ') if i]
+            if len(line) > 1: 
+                
+                copy = line.copy()
+                for i in range(2):
+                    copy[i] = str(int(copy[i])+1)
+                data1.append(copy)
+                data.append(line)
+
+
+
+    # print(data)
+
+    DATA = data + data1
+    with open(dst, 'w') as f:
+        f.write(str(len(DATA)))
+        f.write('\n')
+
+        for line in DATA:
+            f.write(' '.join([str(i) for i in line]))
+            f.write('\n')
+
+
     pass
 
 
