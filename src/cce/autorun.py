@@ -1,5 +1,6 @@
 import typer, sys, getpass, subprocess, pathlib, os,shutil
 from cce.bo.bo_parser import ProcessXMLFile
+from cce.parser.log_parser import pause_log
 from cce.parser.queue_parser import count_spine_pause_r
 from cce.config.setting import *
 app = typer.Typer()
@@ -62,7 +63,7 @@ def kmax_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.ba
     qcn = 1
 
 
-    for kmax in range(20, 220, 20):
+    for kmax in range(20, 40, 20):
         for i in range(1, 4):
 
             result_folder = work_dir / f'pfc_{pfc}_kmax{kmax}_qcn_{int(qcn)}_test{i}'
@@ -88,6 +89,7 @@ def kmax_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.ba
 
             #          flow.txt     mix.tr
             files = ['FLOW_FILE']
+            pause_log(cur_log_txt)
             for f in files: shutil.copy(CONFIG_TXT[f], result_folder)
             shutil.copy(f'flow_monitor.xml', result_folder)
 
@@ -101,9 +103,9 @@ def pfc_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.bat
     work_dir = pathlib.Path(path)
     os.chdir(work_dir)
     print(pathlib.Path().resolve())
-    kmax = 100
+    kmax = 20
     qcn = 1
-    for pfc in range(50, 300, 50):
+    for pfc in range(20, 50, 10):
         for i in range(1, 4):
             result_folder = work_dir / f'pfc_{pfc}_kmax{kmax}_qcn_{int(qcn)}_test{i}'
             result_folder.mkdir(exist_ok=True)
@@ -124,7 +126,7 @@ def pfc_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.bat
                     stderr=f,
                     text=True,
                 )
-
+            pause_log(cur_log_txt)
             #          flow.txt     mix.tr
             files = ['FLOW_FILE']
             for f in files: shutil.copy(CONFIG_TXT[f], result_folder)
@@ -204,15 +206,48 @@ def flow_id_editor(path: str = typer.Argument(..., help="The path to the id file
 
 
     pattern = {
-            '1':'14',
+            '1':'10',
             '2':'16',
-            '3':'30',
+            '3':'26',
             '4':'32',
-            '5':'46',
+            '5':'42',
             '6':'48',
-            '7':'62',
+            '7':'58',
             '8':'64',
             '9':'112',
+            '129':'176',
+            '10':'1',
+            '11':'11',
+            '12':'17',
+            '13':'27',
+            '14':'33',
+            '15':'43',
+            '16':'49',
+            '17':'59',
+            '18':'65',
+            '19':'113',
+            '130':'192',
+            '20':'2',
+            '21':'12',
+            '22':'18',
+            '23':'28',
+            '24':'34',
+            '25':'44',
+            '26':'50',
+            '27':'60',
+            '28':'66',
+            '29':'114',
+            '131':'240',
+            '30':'3',
+            '31':'13',
+            '32':'19',
+            '33':'29',
+            '34':'35',
+            '35':'45',
+            '36':'51',
+            '37':'61',
+            '38':'67',
+            '39':'115',
             }
 
 

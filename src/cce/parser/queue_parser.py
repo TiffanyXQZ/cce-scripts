@@ -1,7 +1,11 @@
 import pathlib
+from typing import Union
 
 
-def count_spine_pause_r(queue: str, range:tuple[int, int] = (280, 288), key: str = 'PAUSE_R') ->tuple[int, int]:
+def count_spine_pause_r(
+        queue: Union[str, pathlib.Path],
+        range:tuple[int, int] = (280, 288),
+        key: str = 'PAUSE_R') ->tuple[int, int]:
     '''
 
     :param queue: file path for queue
