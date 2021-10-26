@@ -1,9 +1,46 @@
+from collections import defaultdict, namedtuple
 from pathlib import Path
 from typing import Union
 from rich import print
-from pyecharts import Bar
+from pyecharts import Bar, Line
 
-from .queue_parser import count_spine_pause_r
+NodeRates = namedtuple('NodeRates', 'times rates')
+
+def echarts_add2line(line:Line, name :str, x: list[int], y:list[int])->None:
+    line.add(name, x, y,
+             is_datazoom_show=True,
+             datazoom_type="slider",
+             # mark_line=["average"],
+             is_datazoom_extra_show=True,
+             datazoom_extra_type="slider",
+             mark_point=["max", "min"],
+             is_more_utils=True,
+             is_selected = True,
+             grid_top= '30%',
+             grid_bottom='30%',
+             yaxis_name= 'Gbps',
+             xaxis_name='us'
+             )
+
+
+
+def sending_rate_line_drawing(
+        path: Union[Path, str],
+        nodes: defaultdict(lambda: {'times': list[int], 'rates':list[int]}))\
+        -> None:
+    if isinstance(path, str): path = Path(path)
+    html = path.parent / 'sending_rate.html'
+    line = Line(
+        'Sending Rates',
+        width=1200,
+        height=600,
+
+    )
+    i = 0
+    for node, (times, rates) in nodes.items():
+        echarts_add2line(line, str(node), times, rates)
+        i += 1
+    line.render(html)
 
 
 def pause_bar(path, times, ps, pr, duration, title):
@@ -44,15 +81,15 @@ def pause_log(log: Union[Path, str], range: tuple[int, int] = (280, 288), ) -> N
 
     with open(log, 'r') as infile, open(log_pause, 'w') as out:
         for line in infile:
-            line1 = line.strip().split(' ')
-            if len(line1) < 3: continue
-            if line1[2] == 'PAUSE_R':
-                if range[0] > int(line1[1]) or int(line1[1]) > range[1]:
+            words = line.strip().split(' ')
+            if len(words) < 3: continue
+            if words[2] == 'PAUSE_R':
+                if range[0] > int(words[1]) or int(words[1]) > range[1]:
                     continue
-            if line1[2] == 'PAUSE_S' or line1[2] == 'PAUSE_R':
+            if words[2] == 'PAUSE_S' or words[2] == 'PAUSE_R':
                 out.write(line)
-                mss.append(int(line1[0]))
-                pauses.append(line1[2])
+                mss.append(int(words[0]))
+                pauses.append(words[2])
     ps, pr = [0], [0]
     times = [mss[0], mss[0] + duration]
 
@@ -76,5 +113,42 @@ def pause_log(log: Union[Path, str], range: tuple[int, int] = (280, 288), ) -> N
               times[1:], ps, pr, duration, title)
 
 
+def sending_rate_log_parser(log: Union[Path, str]):
+    '''
+
+    :param log:
+    :return:
+    .. _sending rate log:
+
+    sending rate log
+    ~~~~~~~~~~~~~~~~~~
+    eg::
+
+        log.txt:
+            8941052 284 Queue 1030
+            8941060 45 m_rate for every packet 8000000000bps
+
+    >>> sending_rate_log_parser("log.txt")
+    8941060 45 m_rate for every packet 8000000000bps
+    '''
+
+    if isinstance(log, str): log = Path(log)
+    sr_file = log.parent / 'sending_rate_log.txt'
+    nodes = defaultdict(lambda: NodeRates([], []))
+
+    with open(log, 'r') as infile, open(sr_file, 'w') as out:
+        for line in infile:
+            if 'every packet' in line:
+                out.write(line)
+                words = line.strip().split(' ')
+                nodes[int(words[1])].times.append(int(words[0]) / 10 ** 3)
+                nodes[int(words[1])].rates.append(int(words[-1][:-3]) / 10 ** 9)
+    sending_rate_line_drawing(log, nodes)
+
+
+
 if __name__ == '__main__':
-    pause_log('log.txt')
+    sending_rate_log_parser('log.txt')
+
+
+

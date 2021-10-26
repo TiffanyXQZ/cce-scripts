@@ -1,6 +1,6 @@
 import typer, sys, getpass, subprocess, pathlib, os,shutil
 from cce.bo.bo_parser import ProcessXMLFile
-from cce.parser.log_parser import pause_log
+from cce.parser.log_parser import pause_log, sending_rate_log_parser
 from cce.parser.queue_parser import count_spine_pause_r
 from cce.config.setting import *
 app = typer.Typer()
@@ -90,6 +90,7 @@ def kmax_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.ba
             #          flow.txt     mix.tr
             files = ['FLOW_FILE']
             pause_log(cur_log_txt)
+            sending_rate_log_parser(cur_log_txt)
             for f in files: shutil.copy(CONFIG_TXT[f], result_folder)
             shutil.copy(f'flow_monitor.xml', result_folder)
 
@@ -127,6 +128,7 @@ def pfc_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.bat
                     text=True,
                 )
             pause_log(cur_log_txt)
+            sending_rate_log_parser(cur_log_txt)
             #          flow.txt     mix.tr
             files = ['FLOW_FILE']
             for f in files: shutil.copy(CONFIG_TXT[f], result_folder)
