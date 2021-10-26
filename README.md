@@ -18,6 +18,6 @@ Built-in type hints used. Lower version does not support this
     ```console
     cce kmax-sensitiviy-run .
     ``` 
-    this command runs kmax-sensitivity function in autorun.py with arguments of current folder.
-    once you activated the venv, the cce command is within the PATH
+    this command runs kmax-sensitivity function in autorun.py with arguments of current folder ```. ```
+    once you activated the venv, the cce command is within the ```PATH```
     
