@@ -14,3 +14,10 @@ Built-in type hints used. Lower version does not support this
 4. pip install -r requirements.txt
 5. pip install -e .
 6. cce --help (to see all running options)
+    eg: 
+    ```console
+    cce kmax-sensitiviy-run .
+    ``` 
+    this command runs kmax-sensitivity function in autorun.py with arguments of current folder.
+    once you activated the venv, the cce command is within the PATH
+    
