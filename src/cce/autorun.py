@@ -64,7 +64,7 @@ def kmax_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.ba
 
 
     for kmax in range(20, 40, 20):
-        for i in range(1, 4):
+        for i in range(1, 2):
 
             result_folder = work_dir / f'pfc_{pfc}_kmax{kmax}_qcn_{int(qcn)}_test{i}'
             result_folder.mkdir(exist_ok=True)
@@ -80,13 +80,13 @@ def kmax_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.ba
             cur_log_txt = result_folder / 'log.txt'
 
             with open(cur_log_txt, 'w') as f:
-                subprocess.run(
+                res = subprocess.run(
                     ['./main.exe', cur_config_txt],
                     stdout=f,
                     stderr=f,
                     text=True,
                 )
-
+            # print(res)
             #          flow.txt     mix.tr
             files = ['FLOW_FILE']
             pause_log(cur_log_txt)
@@ -106,8 +106,8 @@ def pfc_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.bat
     print(pathlib.Path().resolve())
     kmax = 20
     qcn = 1
-    for pfc in range(20, 50, 10):
-        for i in range(1, 4):
+    for pfc in range(150, 250, 50):
+        for i in range(1, 2):
             result_folder = work_dir / f'pfc_{pfc}_kmax{kmax}_qcn_{int(qcn)}_test{i}'
             result_folder.mkdir(exist_ok=True)
             s = set_config({'PFC': str(pfc),
@@ -144,10 +144,11 @@ def flow_moniter_parser(path: str = typer.Argument(..., help="The path to test r
 
     # i (th, rth, wth) = ProcessXMLFile(argv[1])
     column = ["Test1", "flow#", "Mean Tht", "Median Tht", "10th Tht",
-              "Total PAUSE_S", "SPINE PAUSE_R", "Test2", "flow#",
-              "Mean Tht", "Median Tht", "10th Tht", "Total PAUSE_S",
-              "SPINE PAUSE_R", "Test3", "flow#", "Mean Tht", "Median Tht",
-              "10th Tht", "Total PAUSE_S", "SPINE PAUSE_R"]
+              "Total PAUSE_S", "SPINE PAUSE_R"]
+             #Test2", "flow#",
+              #"Mean Tht", "Median Tht", "10th Tht", "Total PAUSE_S",
+              #"SPINE PAUSE_R", "Test3", "flow#", "Mean Tht", "Median Tht",
+              #"10th Tht", "Total PAUSE_S", "SPINE PAUSE_R"]
     aves = ["Avg Mean Tht (Gbps)",
             "Avg Median Tht(Gbps)", "Avg 10th Tht(Gbps)", "Avg Total PAUSE_S", "Avg SPINE PAUSE_R"]
 
@@ -167,7 +168,7 @@ def flow_moniter_parser(path: str = typer.Argument(..., help="The path to test r
         data = []
         for folder in folder_names:
             row = []
-            for j in range(1, 4):
+            for j in range(1, 2):
                 test = f'{folder}test{j}'
                 # print(test)
                 h = ProcessXMLFile(f'{test}/flow_monitor.xml')[i]

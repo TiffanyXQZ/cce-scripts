@@ -1,3 +1,5 @@
+import errno
+import os
 from collections import defaultdict, namedtuple
 from pathlib import Path
 from typing import Union
@@ -5,6 +7,15 @@ from rich import print
 from pyecharts import Bar, Line
 
 NodeRates = namedtuple('NodeRates', 'times rates')
+
+
+def file_exist_notEmpty_check(file : Path):
+    if not file.exists():
+        raise FileNotFoundError(
+            errno.ENOENT, os.strerror(errno.ENOENT), file)
+    if file.stat().st_size == 0:
+        raise Exception(f'{file.name} is empty')
+
 
 def echarts_add2line(line:Line, name :str, x: list[int], y:list[int])->None:
     line.add(name, x, y,
@@ -74,7 +85,7 @@ def pause_bar(path, times, ps, pr, duration, title):
 
 def pause_log(log: Union[Path, str], range: tuple[int, int] = (280, 288), ) -> None:
     if isinstance(log, str): log = Path(log)
-
+    file_exist_notEmpty_check(log)
     duration = 100000  # nano
     log_pause = log.parent / 'pause_log.txt'
     mss, pauses = [], []
@@ -133,6 +144,8 @@ def sending_rate_log_parser(log: Union[Path, str]):
     '''
 
     if isinstance(log, str): log = Path(log)
+    file_exist_notEmpty_check(log)
+
     sr_file = log.parent / 'sending_rate_log.txt'
     nodes = defaultdict(lambda: NodeRates([], []))
 
