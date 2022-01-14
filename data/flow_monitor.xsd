@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xs:schema [
+        <!ELEMENT xs:schema (xs:element|xs:complexType)*>
+        <!ATTLIST xs:schema
+                attributeFormDefault CDATA #REQUIRED
+                elementFormDefault CDATA #REQUIRED
+                xmlns:xs CDATA #REQUIRED>
+        <!ELEMENT xs:element (#PCDATA)>
+        <!ATTLIST xs:element
+                maxOccurs CDATA #IMPLIED
+                minOccurs CDATA #IMPLIED
+                name CDATA #REQUIRED
+                type CDATA #REQUIRED>
+        <!ELEMENT xs:complexType (xs:simpleContent|xs:sequence|xs:attribute)*>
+        <!ATTLIST xs:complexType
+                mixed CDATA #IMPLIED
+                name CDATA #REQUIRED>
+        <!ELEMENT xs:simpleContent (xs:extension)*>
+        <!ELEMENT xs:extension (xs:attribute)*>
+        <!ATTLIST xs:extension
+                base CDATA #REQUIRED>
+        <!ELEMENT xs:attribute (#PCDATA)>
+        <!ATTLIST xs:attribute
+                name CDATA #REQUIRED
+                type CDATA #REQUIRED
+                use CDATA #REQUIRED>
+        <!ELEMENT xs:sequence (xs:element)*>
+        ]>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="FlowMonitor" type="FlowMonitorType"/>
+  <xs:complexType name="binType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:byte" name="index" use="optional"/>
+        <xs:attribute type="xs:float" name="start" use="optional"/>
+        <xs:attribute type="xs:float" name="width" use="optional"/>
+        <xs:attribute type="xs:short" name="count" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="delayHistogramType">
+    <xs:sequence>
+      <xs:element type="binType" name="bin" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:byte" name="nBins" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="jitterHistogramType" mixed="true">
+    <xs:sequence>
+      <xs:element type="binType" name="bin" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:byte" name="nBins" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="packetSizeHistogramType">
+    <xs:sequence>
+      <xs:element type="binType" name="bin"/>
+    </xs:sequence>
+    <xs:attribute type="xs:byte" name="nBins" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="flowInterruptionsHistogramType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:byte" name="nBins" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="FlowType" mixed="true">
+    <xs:sequence>
+      <xs:element type="delayHistogramType" name="delayHistogram" minOccurs="0"/>
+      <xs:element type="jitterHistogramType" name="jitterHistogram" minOccurs="0"/>
+      <xs:element type="packetSizeHistogramType" name="packetSizeHistogram" minOccurs="0"/>
+      <xs:element type="flowInterruptionsHistogramType" name="flowInterruptionsHistogram" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:short" name="flowId" use="optional"/>
+    <xs:attribute type="xs:string" name="timeFirstTxPacket" use="optional"/>
+    <xs:attribute type="xs:string" name="timeFirstRxPacket" use="optional"/>
+    <xs:attribute type="xs:string" name="timeLastTxPacket" use="optional"/>
+    <xs:attribute type="xs:string" name="timeLastRxPacket" use="optional"/>
+    <xs:attribute type="xs:string" name="delaySum" use="optional"/>
+    <xs:attribute type="xs:string" name="jitterSum" use="optional"/>
+    <xs:attribute type="xs:string" name="lastDelay" use="optional"/>
+    <xs:attribute type="xs:int" name="txBytes" use="optional"/>
+    <xs:attribute type="xs:int" name="rxBytes" use="optional"/>
+    <xs:attribute type="xs:short" name="txPackets" use="optional"/>
+    <xs:attribute type="xs:short" name="rxPackets" use="optional"/>
+    <xs:attribute type="xs:byte" name="lostPackets" use="optional"/>
+    <xs:attribute type="xs:short" name="timesForwarded" use="optional"/>
+    <xs:attribute type="xs:float" name="sourceAddress" use="optional"/>
+    <xs:attribute type="xs:float" name="destinationAddress" use="optional"/>
+    <xs:attribute type="xs:byte" name="protocol" use="optional"/>
+    <xs:attribute type="xs:int" name="sourcePort" use="optional"/>
+    <xs:attribute type="xs:int" name="destinationPort" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="FlowStatsType" mixed="true">
+    <xs:sequence>
+      <xs:element type="FlowType" name="Flow" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:short" name="flowId" use="optional"/>
+    <xs:attribute type="xs:short" name="packets" use="optional"/>
+    <xs:attribute type="xs:int" name="bytes" use="optional"/>
+    <xs:attribute type="xs:string" name="delayFromFirstProbeSum" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="Ipv4FlowClassifierType">
+    <xs:sequence>
+      <xs:element type="FlowType" name="Flow" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="FlowProbeType" mixed="true">
+    <xs:sequence>
+      <xs:element type="FlowStatsType" name="FlowStats" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:short" name="index" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="FlowProbesType">
+    <xs:sequence>
+      <xs:element type="FlowProbeType" name="FlowProbe" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="FlowMonitorType">
+    <xs:sequence>
+      <xs:element type="FlowStatsType" name="FlowStats"/>
+      <xs:element type="Ipv4FlowClassifierType" name="Ipv4FlowClassifier"/>
+      <xs:element type="FlowProbesType" name="FlowProbes"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

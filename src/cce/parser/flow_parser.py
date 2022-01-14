@@ -4,8 +4,8 @@ from xml.etree import ElementTree
 
 from rich import print
 
-from pyecharts import options as opts
-from pyecharts.charts import Tree
+# from pyecharts import options as opts
+# from pyecharts.charts import Tree
 
 
 def string2float(s: str) -> float:
@@ -91,11 +91,12 @@ class FlowStatsFlow:
             }
         }
         '''
-        for k, v in flow_elem.attrib:
+        # print(flow_elem.attrib)
+        for k, v in flow_elem.attrib.items():
             fv = string2float(v)
             fv = int(fv) if fv.is_integer() else fv
             setattr(self, k, fv)
-        self.rx_duration = self.timeLastRxPacket - self.timeFirstTxPacket
+        self.rx_duration = self.timeLastRxPacket - self.timeFirstTxPacket   # flow completion time
         self.tx_duration = self.timeLastTxPacket - self.timeLastRxPacket
         if self.rxPackets:
             self.hopCount = self.timesForwarded / self.rxPackets + 1
@@ -122,6 +123,15 @@ class FlowStatsFlow:
             self.flowInterruptionsHistogram = None
         else:
             FlowInterruptionHistogram(interrupt_hist_elem)
+    # def __str__(self):
+
+
+# class FlowSizeInfo(FlowStatsFlow):
+#     def __int__(self):
+#         super(FlowSizeInfo, self).__int__()
+#         self.fct = self.
+
+
 
 
 class Ipv4FlowClassifierFlow:
@@ -151,6 +161,7 @@ class Ipv4FlowClassifierFlow:
 def flowstats_flows(root: ET.Element) -> dict[int, FlowStatsFlow]:
     res = {}
     for flow_ele in root.findall('FlowStats/Flow'):
+        # print(flow_ele.attrib)
         flow = FlowStatsFlow(flow_ele)
         res[flow.flowId] = flow
     return res
@@ -269,3 +280,12 @@ def xml_tag_tree(root_xml: ElementTree) -> dict:
 # tag_tree = xml_tag_tree(root)
 # print(tag_tree)
 # tree_charts([tag_tree])
+
+if __name__ == '__main__':
+    tree = ET.parse('../../../data/flow_monitor.xml')
+    root = tree.getroot()
+    fs = flowstats_flows(root)
+    print(len(fs))
+    print(fs[1].__dir__())
+    print(fs[1].rx_duration)
+    print(fs[1].timeLastRxPacket)

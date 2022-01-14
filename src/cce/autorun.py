@@ -1,8 +1,17 @@
-import typer, sys, getpass, subprocess, pathlib, os,shutil
+import collections
+import csv
+
+import typer, sys, getpass, subprocess, pathlib, os, shutil
+from pathlib import Path
+import xml.etree.ElementTree as ET
+from xml.etree import ElementTree
+from cce.parser.flow_parser import flowstats_flows
 from cce.bo.bo_parser import ProcessXMLFile
 from cce.parser.log_parser import pause_log, sending_rate_log_parser
 from cce.parser.queue_parser import count_spine_pause_r
 from cce.config.setting import *
+from cce.statistics.flow_statistics import flow_count, flow_count_draw_bar, pause_count
+
 app = typer.Typer()
 
 
@@ -28,7 +37,7 @@ def run(path: str = typer.Argument(..., help="The path to main.exe"),
     s = set_config({'PFC': str(pfc),
                     'KMAX': str(kmax),
                     'ENABLE_QCN': str(int(qcn)),
-                    'TRACE_OUTPUT_FILE':str(result_folder / 'mix.tr')
+                    'TRACE_OUTPUT_FILE': str(result_folder / 'mix.tr')
                     })
     cur_config_txt = result_folder / 'config.txt'
     with open(cur_config_txt, 'w') as f: f.write(s)
@@ -42,12 +51,10 @@ def run(path: str = typer.Argument(..., help="The path to main.exe"),
             text=True,
         )
 
-
     #          flow.txt     mix.tr
     files = ['FLOW_FILE']
     for f in files: shutil.copy(CONFIG_TXT[f], result_folder)
-    shutil.copy(f'flow_monitor.xml', result_folder )
-
+    shutil.copy(f'flow_monitor.xml', result_folder)
 
 
 @app.command()
@@ -61,7 +68,6 @@ def kmax_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.ba
     os.chdir(work_dir)
     pfc = 100
     qcn = 1
-
 
     for kmax in range(20, 40, 20):
         for i in range(1, 2):
@@ -93,10 +99,6 @@ def kmax_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.ba
             sending_rate_log_parser(cur_log_txt)
             for f in files: shutil.copy(CONFIG_TXT[f], result_folder)
             shutil.copy(f'flow_monitor.xml', result_folder)
-
-
-
-
 
 
 @app.command()
@@ -145,10 +147,10 @@ def flow_moniter_parser(path: str = typer.Argument(..., help="The path to test r
     # i (th, rth, wth) = ProcessXMLFile(argv[1])
     column = ["Test1", "flow#", "Mean Tht", "Median Tht", "10th Tht",
               "Total PAUSE_S", "SPINE PAUSE_R"]
-             #Test2", "flow#",
-              #"Mean Tht", "Median Tht", "10th Tht", "Total PAUSE_S",
-              #"SPINE PAUSE_R", "Test3", "flow#", "Mean Tht", "Median Tht",
-              #"10th Tht", "Total PAUSE_S", "SPINE PAUSE_R"]
+    # Test2", "flow#",
+    # "Mean Tht", "Median Tht", "10th Tht", "Total PAUSE_S",
+    # "SPINE PAUSE_R", "Test3", "flow#", "Mean Tht", "Median Tht",
+    # "10th Tht", "Total PAUSE_S", "SPINE PAUSE_R"]
     aves = ["Avg Mean Tht (Gbps)",
             "Avg Median Tht(Gbps)", "Avg 10th Tht(Gbps)", "Avg Total PAUSE_S", "Avg SPINE PAUSE_R"]
 
@@ -203,57 +205,54 @@ def flow_moniter_parser(path: str = typer.Argument(..., help="The path to test r
         #     res = [str(i) for i in res]
         #     f.write(','.join(res))
     pass
+
+
 @app.command()
 def flow_id_editor(path: str = typer.Argument(..., help="The path to the id file")):
-
-
-
     pattern = {
-            '1':'10',
-            '2':'16',
-            '3':'26',
-            '4':'32',
-            '5':'42',
-            '6':'48',
-            '7':'58',
-            '8':'64',
-            '9':'112',
-            '129':'176',
-            '10':'1',
-            '11':'11',
-            '12':'17',
-            '13':'27',
-            '14':'33',
-            '15':'43',
-            '16':'49',
-            '17':'59',
-            '18':'65',
-            '19':'113',
-            '130':'192',
-            '20':'2',
-            '21':'12',
-            '22':'18',
-            '23':'28',
-            '24':'34',
-            '25':'44',
-            '26':'50',
-            '27':'60',
-            '28':'66',
-            '29':'114',
-            '131':'240',
-            '30':'3',
-            '31':'13',
-            '32':'19',
-            '33':'29',
-            '34':'35',
-            '35':'45',
-            '36':'51',
-            '37':'61',
-            '38':'67',
-            '39':'115',
-            }
-
-
+        '1': '10',
+        '2': '16',
+        '3': '26',
+        '4': '32',
+        '5': '42',
+        '6': '48',
+        '7': '58',
+        '8': '64',
+        '9': '112',
+        '129': '176',
+        '10': '1',
+        '11': '11',
+        '12': '17',
+        '13': '27',
+        '14': '33',
+        '15': '43',
+        '16': '49',
+        '17': '59',
+        '18': '65',
+        '19': '113',
+        '130': '192',
+        '20': '2',
+        '21': '12',
+        '22': '18',
+        '23': '28',
+        '24': '34',
+        '25': '44',
+        '26': '50',
+        '27': '60',
+        '28': '66',
+        '29': '114',
+        '131': '240',
+        '30': '3',
+        '31': '13',
+        '32': '19',
+        '33': '29',
+        '34': '35',
+        '35': '45',
+        '36': '51',
+        '37': '61',
+        '38': '67',
+        '39': '115',
+    }
 
     data = []
     with open(path, 'r') as f:
@@ -261,7 +260,7 @@ def flow_id_editor(path: str = typer.Argument(..., help="The path to the id file
         for line1 in f:
 
             line = [i for i in line1.strip().split(' ') if i]
-            if len(line) > 1: 
+            if len(line) > 1:
                 if line[0] in pattern: line[0] = pattern[line[0]]
                 if line[1] in pattern: line[1] = pattern[line[1]]
             data.append(line)
@@ -273,13 +272,31 @@ def flow_id_editor(path: str = typer.Argument(..., help="The path to the id file
             f.write(' '.join([str(i) for i in line]))
             f.write('\n')
 
+
+@app.command()
+def flow_size_editor(path: str = typer.Argument(..., help="The path to the id file")):
+    data = []
+    with open(path, 'r') as f:
+
+        for line1 in f:
+
+            line = [i for i in line1.strip().split(' ') if i]
+            if len(line) > 1:
+                line[3] = str(int(line[3]) * 4)
+            data.append(line)
+
+    # print(data)
+
+    with open(path, 'w') as f:
+        for line in data:
+            f.write(' '.join([str(i) for i in line]))
+            f.write('\n')
+
+
 @app.command()
 def additional_flow_gen(src: str = typer.Argument(..., help="The path to the id file"),
                         dst: str = typer.Argument(..., help="The path to the dst file"),
-    ):
-
-
-
+                        ):
     data = []
     data1 = []
     with open(src, 'r') as f:
@@ -287,15 +304,13 @@ def additional_flow_gen(src: str = typer.Argument(..., help="The path to the id 
         for line1 in f:
 
             line = [i for i in line1.strip().split(' ') if i]
-            if len(line) > 1: 
-                
+            if len(line) > 1:
+
                 copy = line.copy()
                 for i in range(2):
-                    copy[i] = str(int(copy[i])+1)
+                    copy[i] = str(int(copy[i]) + 1)
                 data1.append(copy)
                 data.append(line)
-
-
 
     # print(data)
 
@@ -308,8 +323,73 @@ def additional_flow_gen(src: str = typer.Argument(..., help="The path to the id 
             f.write(' '.join([str(i) for i in line]))
             f.write('\n')
 
-
     pass
+
+
+@app.command()
+def flow_size_info_persist(src: str = typer.Argument(..., help="The path to the id file"),
+                           dst: str = typer.Argument(..., help="The path to the dst file"),
+                           ):
+    '''
+    Persist a csv file about flow_size
+    #csv schema
+    #flowID   flow_size   timeFirstTxPacket timeLastRxPacket fct
+
+    :param src:
+    :param dst:
+    :return:
+    '''
+    if isinstance(src, str): src = Path(src)
+    if isinstance(dst, str): dst = Path(dst)
+    tree = ET.parse(src)
+    root = tree.getroot()
+    fs = flowstats_flows(root)
+    res = []
+    for k, att in fs.items():
+        res.append([att.flowId,
+                    att.rxPackets,
+                    att.timeFirstTxPacket / 10**6,
+                    att.timeLastRxPacket / 10**6,
+                    att.rx_duration / 10**6]
+                   )
+    res.sort(key=lambda x: x[2])
+    schema = ['flowId',
+              'flow_size',
+              'timeFirstTxPacket',
+              'timeLastRxPacket',
+              'fct']
+    import csv
+    with open(dst, 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(schema)
+        for row in res: writer.writerow(row)
+
+    flow_counts = flow_count(res)
+    draw = dst.parent / 'flow_count.html'
+    flow_count_draw_bar(draw, flow_counts)
+
+@app.command()
+def pause_count_persist(src: str = typer.Argument(..., help="The path to the id file"),
+                           dst: str = typer.Option('pause_log_count.csv', help="kmax not kmin"),
+                           ):
+    '''
+        #input: name pause_log.txt
+        #csv schema
+        #time_stamp, node id, PAUSE TYPE(S | R),
+        eg:
+            1386615 264 PAUSE_S 104030
+
+
+        # persist
+        name: pause_log_count.txt
+        schema:
+            node id, number of pause_s, number of pause_r
+
+        :param src:
+        :param dst:
+        :return:
+        '''
+    pause_count(src, dst)
 
 
 if __name__ == '__main__':

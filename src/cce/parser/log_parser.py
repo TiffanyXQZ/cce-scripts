@@ -15,6 +15,11 @@ def file_exist_notEmpty_check(file : Path):
             errno.ENOENT, os.strerror(errno.ENOENT), file)
     if file.stat().st_size == 0:
         raise Exception(f'{file.name} is empty')
+    with open(file, 'r') as infile:
+        line = infile.readline().strip()
+        if not line:
+            raise Exception(f'{file.name} is empty')
+
 
 
 def echarts_add2line(line:Line, name :str, x: list[int], y:list[int])->None:
@@ -101,6 +106,8 @@ def pause_log(log: Union[Path, str], range: tuple[int, int] = (280, 288), ) -> N
                 out.write(line)
                 mss.append(int(words[0]))
                 pauses.append(words[2])
+    file_exist_notEmpty_check(log_pause)
+
     ps, pr = [0], [0]
     times = [mss[0], mss[0] + duration]
 
@@ -156,6 +163,7 @@ def sending_rate_log_parser(log: Union[Path, str]):
                 words = line.strip().split(' ')
                 nodes[int(words[1])].times.append(int(words[0]) / 10 ** 3)
                 nodes[int(words[1])].rates.append(int(words[-1][:-3]) / 10 ** 9)
+
     sending_rate_line_drawing(log, nodes)
 
 
