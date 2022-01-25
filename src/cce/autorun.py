@@ -1,6 +1,6 @@
 import collections
 import csv
-
+from rich import print
 import typer, sys, getpass, subprocess, pathlib, os, shutil
 from pathlib import Path
 import xml.etree.ElementTree as ET
@@ -10,7 +10,8 @@ from cce.bo.bo_parser import ProcessXMLFile
 from cce.parser.log_parser import pause_log, sending_rate_log_parser
 from cce.parser.queue_parser import count_spine_pause_r
 from cce.config.setting import *
-from cce.statistics.flow_statistics import flow_count, flow_count_draw_bar, pause_count
+from cce.statistics.flow_statistics import flow_count, byte_count_draw_bar, pause_count, byte_count, pause_count_all, \
+    newFCT
 
 app = typer.Typer()
 
@@ -139,6 +140,11 @@ def pfc_sensitiviy_run(path: str = typer.Argument(..., help="The path to run.bat
 
 @app.command()
 def flow_moniter_parser(path: str = typer.Argument(..., help="The path to test result folder and the script folder")):
+    '''
+
+    :param path: flow_monitor.xml
+    :return:
+    '''
     script = 'flowmon-parse-results.py'
     work_dir = pathlib.PureWindowsPath(path)
     os.chdir(path)
@@ -327,16 +333,16 @@ def additional_flow_gen(src: str = typer.Argument(..., help="The path to the id 
 
 
 @app.command()
-def flow_size_info_persist(src: str = typer.Argument(..., help="The path to the id file"),
-                           dst: str = typer.Argument(..., help="The path to the dst file"),
+def flow_size_info_persist(src: str =  typer.Option('flow_monitor.xml', help="The path to the flow_monitor.xml file"),
+                           dst: str = typer.Option('flow_size.csv', help="The path to the dst file"),
                            ):
     '''
     Persist a csv file about flow_size
     #csv schema
-    #flowID   flow_size   timeFirstTxPacket timeLastRxPacket fct
+    #flowID   flow_size txBytes  timeFirstTxPacket timeLastRxPacket fct
 
-    :param src:
-    :param dst:
+    :param src: flow_monitor.xml
+    :param dst: flow_size.csv
     :return:
     '''
     if isinstance(src, str): src = Path(src)
@@ -348,13 +354,15 @@ def flow_size_info_persist(src: str = typer.Argument(..., help="The path to the 
     for k, att in fs.items():
         res.append([att.flowId,
                     att.rxPackets,
+                    att.txBytes,
                     att.timeFirstTxPacket / 10**6,
                     att.timeLastRxPacket / 10**6,
                     att.rx_duration / 10**6]
                    )
-    res.sort(key=lambda x: x[2])
+    res.sort(key=lambda x: x[3])
     schema = ['flowId',
               'flow_size',
+              'txBytes',
               'timeFirstTxPacket',
               'timeLastRxPacket',
               'fct']
@@ -364,13 +372,14 @@ def flow_size_info_persist(src: str = typer.Argument(..., help="The path to the 
         writer.writerow(schema)
         for row in res: writer.writerow(row)
 
-    flow_counts = flow_count(res)
-    draw = dst.parent / 'flow_count.html'
-    flow_count_draw_bar(draw, flow_counts)
+    # flow_counts = flow_count(res)
+    byte_counts = byte_count(res)
+    draw = dst.parent / 'byte_count.html'
+    byte_count_draw_bar(draw, byte_counts)
 
 @app.command()
-def pause_count_persist(src: str = typer.Argument(..., help="The path to the id file"),
-                           dst: str = typer.Option('pause_log_count.csv', help="kmax not kmin"),
+def pause_count_persist(src: str = typer.Option('log.txt', help="The path to the pause_log.txt file"),
+                           dst: str = typer.Option('pause_all_count.csv', help="The path to the pause_log_count.csv file"),
                            ):
     '''
         #input: name pause_log.txt
@@ -389,7 +398,30 @@ def pause_count_persist(src: str = typer.Argument(..., help="The path to the id 
         :param dst:
         :return:
         '''
-    pause_count(src, dst)
+    pause_count_all(src, dst)
+
+FLOW_TXT = r'C:\Users\netwo\Desktop\tiffany\edited-tiffany-newAdjustRate_ns3-rdma\ns3-rdma-copy\windows\ns-3-dev\x64\Release\mix\flowtxt.csv'
+
+@app.command()
+def newFCT_run(dir: str = typer.Option('.', help="the directory contains flow_monitor.xml"),
+               flow_txt: str = typer.Option(FLOW_TXT, help="The path to the pause_log_count.csv file"),
+               ):
+
+    target = 'flow_monitor.xml'
+    q = collections.deque([Path(dir)])
+
+    while q:
+        cur = q.popleft()
+        for f in cur.iterdir():
+            if f.is_dir(): q.append(f)
+            elif f.name == target:
+                print(f'Processing {f}')
+                # newFCT(f, flow_txt)
+
+
+
+
+
 
 
 if __name__ == '__main__':

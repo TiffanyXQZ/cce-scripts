@@ -125,11 +125,52 @@ class FlowStatsFlow:
             FlowInterruptionHistogram(interrupt_hist_elem)
     # def __str__(self):
 
+#
+# class FlowTxt:
+#     '''
+#     sender id, receiver id, priority, flow size, flow start time, simulation end time
+#     128 46 3 24 0.000058 10.000058
+#     '''
+#     def __int__(self):
+#         self.sender_id =
+
+
+
+
+# class NewFlowStats():
+#     '''
+#
+#     FlowTxt.flow_start_time
+#
+#     '''
+#
+#     def __int__(self):
+#         self.flowStartTime =
+
 
 # class FlowSizeInfo(FlowStatsFlow):
 #     def __int__(self):
 #         super(FlowSizeInfo, self).__int__()
 #         self.fct = self.
+
+
+'''
+    
+    match: (sourceAddress, destinationAddress)
+
+    flow_monitor.xml -> t1 : FlowStatsFlow.timeLastRxPackets (nano second)  
+    mix/flowtxt.csv -> t2 : flowStartTime (second)
+    
+    (sourceAddress, destinationAddress) : new_fct = t1 - t2 
+    
+    
+    
+    
+    
+
+
+'''
+
 
 
 
@@ -151,6 +192,7 @@ class Ipv4FlowClassifierFlow:
             'destinationPort': '9199'
         },
         '''
+        self.flowId = int(iFlow.get('flowId'))
         self.sourceAddress = iFlow.get('sourceAddress')
         self.destinationAddress = iFlow.get('destinationAddress')
         self.sourcePort = int(iFlow.get('sourcePort'))
@@ -191,6 +233,43 @@ def txBitrate_IP(xml:str, ip:str)->tuple[list,list, list]:
     th: all txBitrate
     rth: all txBitrate for the ip
     wth: all that not for the ip
+
+    <FlowStats>
+        <Flow flowId="5000"
+        timeFirstTxPacket="+66470237.0ns"
+        timeFirstRxPacket="+66483232.0ns"
+        timeLastTxPacket="+71266117.0ns"
+        timeLastRxPacket="+71279118.0ns"
+        delaySum="+467955.0ns"
+        jitterSum="+150.0ns"
+        lastDelay="+13001.0ns"
+        txBytes="37008" rxBytes="37008" txPackets="36" rxPackets="36" lostPackets="0" timesForwarded="180">
+
+            <delayHistogram nBins="1" >
+                <bin index="0" start="0" width="0.001" count="36" />
+                </delayHistogram>
+                <jitterHistogram nBins="1" >
+            <bin index="0" start="0" width="0.001" count="35" />
+          </jitterHistogram>
+      <packetSizeHistogram nBins="52" >
+        <bin index="51" start="1020" width="20" count="36" />
+      </packetSizeHistogram>
+      <flowInterruptionsHistogram nBins="0" >
+      </flowInterruptionsHistogram>
+    </Flow>
+  </FlowStats>
+
+  <Ipv4FlowClassifier>
+    <
+    Flow flowId="8"
+    sourceAddress="1.1"
+    destinationAddress="1.161"
+    protocol="17"
+    sourcePort="49153" destinationPort="31303" />
+
+
+
+
     :param xml: flow_monitor.xml
     :param ip: ip address
     :return: (th, rth, wth)
